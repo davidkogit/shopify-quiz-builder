@@ -121,10 +121,10 @@ export async function GET(req: NextRequest): Promise<NextResponse> {
   const response = NextResponse.redirect(authUrl);
   response.cookies.set("shopify_nonce", nonce, {
     httpOnly: true,
-    secure: process.env.NODE_ENV === "production",
+    secure: false,
     sameSite: "lax",
     path: "/",
-    maxAge: 60 * 10,
+    maxAge: 60 * 10, // 10 minutes — plenty of time for the merchant to approve
   });
 
   return response;
