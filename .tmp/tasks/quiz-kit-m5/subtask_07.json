@@ -1,0 +1,38 @@
+{
+  "id": "quiz-kit-m5-07",
+  "seq": "07",
+  "title": "Build submissions export API generating .xlsx downloads",
+  "status": "completed",
+  "agent_id": "coder-agent",
+  "started_at": "2026-05-20T00:00:00Z",
+  "completed_at": "2026-05-20T00:00:00Z",
+  "completion_summary": "Built submissions export API with .xlsx generation using SheetJS. 10-column spreadsheet with session auth and same filters as list API.",
+  "context_files": [
+    "/root/.config/opencode/context/core/standards/code-quality.md",
+    "/root/.config/opencode/context/core/standards/security-patterns.md"
+  ],
+  "reference_files": [
+    "/workspace/quiz-kit/src/app/api/admin/quizzes/route.ts",
+    "/workspace/quiz-kit/lib/session.ts",
+    "/workspace/quiz-kit/lib/store.ts",
+    "/workspace/quiz-kit/lib/prisma.ts",
+    "/workspace/quiz-kit/prisma/schema.prisma",
+    "/workspace/quiz-kit/src/app/(admin)/submissions/page.tsx"
+  ],
+  "acceptance_criteria": [
+    "GET /api/admin/submissions/export verifies session and resolves store (401 if invalid)",
+    "Accepts optional query params: ?quizId=, ?from=, ?to=, ?search= for filtering (same as list page)",
+    "Queries Submission records scoped to storeId with filters applied",
+    "Generates .xlsx file using a library (e.g., exceljs or xlsx) with proper Content-Type and Content-Disposition headers",
+    "Excel columns: Date, Quiz, Email, Name, Phone, Session ID, Result Title, Recommended Products, IP Address",
+    "Parses answers JSON column into human-readable format (question: answer per row or flattened columns)",
+    "Parses recommendedProducts JSON column into comma-separated product titles",
+    "Returns application/vnd.openxmlformats-officedocument.spreadsheetml.sheet with filename submissions-export-{date}.xlsx",
+    "Handles empty result set gracefully (empty spreadsheet with headers only)",
+    "Follows existing resolveStore pattern for session auth",
+    "Response streams the file (no in-memory buffering for large datasets)"
+  ],
+  "deliverables": [
+    "src/app/api/admin/submissions/export/route.ts"
+  ]
+}

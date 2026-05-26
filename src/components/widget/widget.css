@@ -1,0 +1,255 @@
+/*
+  Quiz Kit Widget — standalone CSS (no Tailwind)
+  All selectors scoped under .quiz-kit-widget — no theme conflicts.
+  Override colors via quiz.settings.styles or custom properties.
+*/
+.quiz-kit-widget {
+  --qk-primary: #3B82F6;
+  --qk-primary-hover: #2563EB;
+  --qk-primary-light: rgba(59,130,246,0.1);
+  --qk-secondary: #F3F4F6;
+  --qk-secondary-hover: #E5E7EB;
+  --qk-bg: #FFFFFF;
+  --qk-card-bg: #F9FAFB;
+  --qk-text: #1F2937;
+  --qk-muted: #6B7280;
+  --qk-border: #E5E7EB;
+  --qk-success: #10B981;
+  --qk-success-light: rgba(16,185,129,0.1);
+  --qk-error: #EF4444;
+  --qk-error-light: #FEF2F2;
+  --qk-radius: 8px;
+  --qk-radius-sm: 6px;
+  --qk-shadow: 0 1px 3px rgba(0,0,0,0.08);
+  --qk-shadow-lg: 0 4px 12px rgba(0,0,0,0.08);
+  --qk-font: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
+    "Helvetica Neue", Arial, sans-serif;
+  --qk-transition: 0.25s ease;
+
+  max-width: 480px; margin: 0 auto; background: var(--qk-bg);
+  border-radius: 16px; box-shadow: var(--qk-shadow-lg);
+  font-family: var(--qk-font); font-size: 16px; color: var(--qk-text);
+  line-height: 1.5; overflow: hidden; position: relative;
+}
+.quiz-kit-widget *, .quiz-kit-widget *::before, .quiz-kit-widget *::after {
+  box-sizing: border-box; margin: 0; padding: 0;
+}
+.quiz-kit-widget img { max-width: 100%; height: auto; display: block; }
+.quiz-kit-widget button { font-family: inherit; cursor: pointer; border: none; background: none; }
+
+/* --- Page transitions --- */
+.qk-page {
+  padding: 28px 24px 20px; animation: qk-fade-in 0.3s ease;
+  min-height: 360px; display: flex; flex-direction: column;
+}
+.qk-page.qk-exiting { animation: qk-fade-out 0.15s ease forwards; }
+
+/* --- Progress bar --- */
+.qk-progress { height: 4px; background: var(--qk-border); border-radius: 2px; margin-bottom: 24px; overflow: hidden; }
+.qk-progress-bar { height: 100%; background: var(--qk-primary); border-radius: 2px; transition: width var(--qk-transition); }
+
+/* --- Intro page --- */
+.qk-intro { text-align: center; align-items: center; justify-content: center; }
+.qk-intro-image { width: 80px; height: 80px; border-radius: 12px; object-fit: cover; margin: 0 auto 16px; }
+.qk-intro-title { font-size: 22px; font-weight: 700; margin-bottom: 8px; }
+.qk-intro-subtitle { font-size: 15px; color: var(--qk-muted); margin-bottom: 28px; max-width: 320px; }
+.qk-btn-primary {
+  display: inline-flex; align-items: center; justify-content: center;
+  min-width: 160px; min-height: 48px; padding: 12px 32px;
+  background: var(--qk-primary); color: #fff; font-size: 16px; font-weight: 600;
+  border-radius: var(--qk-radius); transition: background var(--qk-transition), transform 0.1s ease;
+}
+.qk-btn-primary:hover { background: var(--qk-primary-hover); }
+.qk-btn-primary:active { transform: scale(0.97); }
+.qk-btn-primary:disabled { opacity: 0.5; cursor: not-allowed; }
+
+/* --- Question page --- */
+.qk-question-label { font-size: 12px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em; color: var(--qk-muted); margin-bottom: 4px; }
+.qk-question-title { font-size: 18px; font-weight: 700; margin-bottom: 6px; }
+.qk-question-subtitle { font-size: 14px; color: var(--qk-muted); margin-bottom: 16px; }
+
+/* Answer cards (radio style) */
+.qk-answer-stack { display: flex; flex-direction: column; gap: 10px; margin-top: 4px; }
+.qk-answer-card {
+  display: flex; align-items: center; gap: 10px; width: 100%; min-height: 48px;
+  padding: 12px 14px; border: 1.5px solid var(--qk-border);
+  border-radius: var(--qk-radius); background: var(--qk-bg); text-align: left;
+  transition: border-color var(--qk-transition), background var(--qk-transition), box-shadow var(--qk-transition);
+}
+.qk-answer-card:hover { background: var(--qk-card-bg); }
+.qk-answer-card.qk-selected { border-color: var(--qk-primary); background: var(--qk-primary-light); box-shadow: 0 0 0 1px var(--qk-primary); }
+.qk-answer-radio {
+  width: 20px; height: 20px; min-width: 20px; border: 2px solid var(--qk-border);
+  border-radius: 50%; transition: border-color var(--qk-transition), background var(--qk-transition);
+}
+.qk-answer-card.qk-selected .qk-answer-radio { border-color: var(--qk-primary); background: var(--qk-primary); box-shadow: inset 0 0 0 3px var(--qk-bg); }
+.qk-answer-text { flex: 1; font-size: 15px; min-width: 0; }
+.qk-answer-image { width: 40px; height: 40px; border-radius: 6px; object-fit: cover; }
+
+/* Image + Text grid */
+.qk-answer-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 4px; }
+.qk-answer-grid .qk-answer-card { flex-direction: column; align-items: stretch; gap: 8px; padding: 0; min-height: auto; overflow: hidden; }
+.qk-answer-grid .qk-answer-image { width: 100%; height: 100px; min-height: 80px; border-radius: 0; object-fit: cover; }
+.qk-answer-grid .qk-answer-text { padding: 0 10px 10px; font-size: 13px; text-align: center; }
+
+/* Range slider */
+.qk-range-slider { margin-top: 20px; }
+.qk-range-slider input[type="range"] { width: 100%; height: 6px; accent-color: var(--qk-primary); }
+.qk-range-labels { display: flex; justify-content: space-between; font-size: 12px; color: var(--qk-muted); margin-top: 6px; }
+
+/* Select dropdown */
+.qk-select {
+  width: 100%; min-height: 48px; padding: 12px 14px; border: 1.5px solid var(--qk-border);
+  border-radius: var(--qk-radius-sm); background: var(--qk-bg); font-size: 15px; color: var(--qk-text);
+  appearance: none; background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%236B7280' stroke-width='2'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E");
+  background-repeat: no-repeat; background-position: right 14px center;
+  transition: border-color var(--qk-transition);
+}
+.qk-select:focus { border-color: var(--qk-primary); outline: none; box-shadow: 0 0 0 2px var(--qk-primary-light); }
+.qk-select.qk-error { border-color: var(--qk-error); }
+
+/* Text input */
+.qk-input {
+  width: 100%; min-height: 48px; padding: 12px 14px; border: 1.5px solid var(--qk-border);
+  border-radius: var(--qk-radius-sm); font-size: 15px; color: var(--qk-text); background: var(--qk-bg);
+  transition: border-color var(--qk-transition), box-shadow var(--qk-transition);
+}
+.qk-input::placeholder { color: var(--qk-muted); opacity: 0.6; }
+.qk-input:focus { border-color: var(--qk-primary); outline: none; box-shadow: 0 0 0 2px var(--qk-primary-light); }
+.qk-input.qk-error { border-color: var(--qk-error); box-shadow: 0 0 0 2px var(--qk-error-light); }
+.qk-input-error { font-size: 13px; color: var(--qk-error); margin-top: 6px; }
+
+/* --- Navigation --- */
+.qk-nav { display: flex; align-items: center; justify-content: space-between; margin-top: auto; padding-top: 20px; border-top: 1px solid var(--qk-border); }
+.qk-btn-nav { display: inline-flex; align-items: center; gap: 4px; min-width: 44px; min-height: 44px; padding: 10px 16px; border-radius: var(--qk-radius); font-size: 14px; font-weight: 600; color: var(--qk-text); transition: background var(--qk-transition); }
+.qk-btn-nav:hover { background: var(--qk-secondary); }
+.qk-btn-nav:disabled { opacity: 0.35; cursor: not-allowed; pointer-events: none; }
+.qk-btn-nav.qk-nav-next { color: #fff; background: var(--qk-primary); }
+.qk-btn-nav.qk-nav-next:hover { background: var(--qk-primary-hover); }
+.qk-btn-nav.qk-nav-next:disabled { background: var(--qk-primary); }
+.qk-nav-count { font-size: 13px; color: var(--qk-muted); font-weight: 500; }
+
+/* --- Email capture --- */
+.qk-email-capture { text-align: center; align-items: center; justify-content: center; }
+.qk-email-capture .qk-input { margin-bottom: 12px; }
+.qk-email-note { font-size: 13px; color: var(--qk-muted); margin-top: 12px; }
+
+/* --- Results page --- */
+.qk-results { align-items: center; text-align: center; }
+.qk-result-title { font-size: 22px; font-weight: 700; margin-bottom: 8px; }
+.qk-result-desc { font-size: 15px; color: var(--qk-muted); margin-bottom: 24px; max-width: 360px; }
+
+/* --- Discount code banner --- */
+.qk-discount-banner {
+  width: 100%; padding: 16px; margin-bottom: 20px;
+  background: linear-gradient(135deg, #FEF3C7 0%, #FDE68A 100%);
+  border: 1px solid #F59E0B; border-radius: var(--qk-radius);
+  text-align: center;
+}
+.dark .quiz-kit-widget .qk-discount-banner,
+[data-theme="dark"] .quiz-kit-widget .qk-discount-banner,
+[data-mode="dark"] .quiz-kit-widget .qk-discount-banner {
+  background: linear-gradient(135deg, #3B3B1C 0%, #4A4A22 100%);
+  border-color: #A16207;
+}
+.qk-discount-banner-text {
+  font-size: 14px; font-weight: 500; color: #92400E; margin-bottom: 10px;
+}
+.dark .quiz-kit-widget .qk-discount-banner-text,
+[data-theme="dark"] .quiz-kit-widget .qk-discount-banner-text,
+[data-mode="dark"] .quiz-kit-widget .qk-discount-banner-text {
+  color: #FDE68A;
+}
+.qk-discount-banner-code {
+  display: flex; align-items: center; justify-content: center; gap: 8px;
+}
+.qk-discount-code {
+  font-size: 18px; font-weight: 700; font-family: "SF Mono", "Fira Code", monospace;
+  color: #1F2937; background: rgba(255,255,255,0.6);
+  padding: 6px 14px; border-radius: var(--qk-radius-sm);
+  border: 1px dashed #D97706; letter-spacing: 0.06em;
+}
+.dark .quiz-kit-widget .qk-discount-code,
+[data-theme="dark"] .quiz-kit-widget .qk-discount-code,
+[data-mode="dark"] .quiz-kit-widget .qk-discount-code {
+  color: #F9FAFB; background: rgba(0,0,0,0.3); border-color: #A16207;
+}
+.qk-discount-copy-btn {
+  min-height: 36px; padding: 8px 16px; border-radius: var(--qk-radius-sm);
+  font-size: 13px; font-weight: 600; background: var(--qk-text); color: var(--qk-bg);
+  transition: background var(--qk-transition), opacity var(--qk-transition);
+}
+.qk-discount-copy-btn:hover { opacity: 0.85; }
+.qk-discount-copy-btn:active { transform: scale(0.96); }
+.dark .quiz-kit-widget .qk-discount-copy-btn,
+[data-theme="dark"] .quiz-kit-widget .qk-discount-copy-btn,
+[data-mode="dark"] .quiz-kit-widget .qk-discount-copy-btn {
+  background: var(--qk-bg); color: var(--qk-text);
+}
+
+/* Product grid */
+.qk-product-grid { display: grid; grid-template-columns: 1fr; gap: 16px; width: 100%; text-align: left; }
+@media (min-width: 400px) { .qk-product-grid { grid-template-columns: 1fr 1fr; } }
+
+.qk-product-card { border: 1px solid var(--qk-border); border-radius: var(--qk-radius); background: var(--qk-bg); overflow: hidden; display: flex; flex-direction: column; transition: box-shadow var(--qk-transition); }
+.qk-product-card:hover { box-shadow: var(--qk-shadow); }
+.qk-product-image { width: 100%; aspect-ratio: 1/1; object-fit: cover; background: var(--qk-card-bg); }
+.qk-product-body { padding: 12px; display: flex; flex-direction: column; gap: 6px; flex: 1; }
+.qk-product-title { font-size: 14px; font-weight: 600; line-height: 1.3; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+.qk-product-price { font-size: 15px; font-weight: 700; }
+
+/* Add to cart */
+.qk-btn-cart { display: inline-flex; align-items: center; justify-content: center; gap: 6px; width: 100%; min-height: 42px; padding: 10px 14px; margin-top: auto; background: var(--qk-primary); color: #fff; font-size: 14px; font-weight: 600; border-radius: var(--qk-radius-sm); transition: background var(--qk-transition), transform 0.1s ease; }
+.qk-btn-cart:hover { background: var(--qk-primary-hover); }
+.qk-btn-cart:active { transform: scale(0.97); }
+.qk-btn-cart:disabled { opacity: 0.6; cursor: not-allowed; }
+.qk-btn-cart.qk-added { background: var(--qk-success); pointer-events: none; }
+.qk-btn-cart.qk-btn-cart-error { background: var(--qk-error); }
+.qk-spinner { display: inline-block; width: 16px; height: 16px; border: 2px solid rgba(255,255,255,0.3); border-top-color: #fff; border-radius: 50%; animation: qk-spin 0.6s linear infinite; }
+
+/* --- Loading skeleton --- */
+.qk-skeleton { display: flex; flex-direction: column; gap: 14px; padding: 28px 24px; }
+.qk-skeleton-line { height: 16px; border-radius: 4px; background: linear-gradient(90deg, var(--qk-card-bg) 25%, var(--qk-border) 50%, var(--qk-card-bg) 75%); background-size: 200% 100%; animation: qk-shimmer 1.5s ease-in-out infinite; }
+.qk-skeleton-line:nth-child(1) { width: 60%; }
+.qk-skeleton-line:nth-child(2) { width: 80%; }
+.qk-skeleton-line:nth-child(3) { width: 100%; height: 48px; border-radius: var(--qk-radius); }
+.qk-skeleton-line:nth-child(4) { width: 100%; height: 48px; border-radius: var(--qk-radius); }
+
+/* --- Error state --- */
+.qk-error-state { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 12px; padding: 40px 24px; text-align: center; }
+.qk-error-msg { font-size: 15px; color: var(--qk-muted); max-width: 280px; }
+.qk-btn-retry { min-height: 44px; padding: 10px 24px; background: var(--qk-secondary); color: var(--qk-text); border-radius: var(--qk-radius-sm); font-size: 14px; font-weight: 600; transition: background var(--qk-transition); }
+.qk-btn-retry:hover { background: var(--qk-secondary-hover); }
+
+/* --- Utilities --- */
+.qk-hidden { display: none !important; }
+.qk-sr-only { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0,0,0,0); white-space: nowrap; border: 0; }
+
+/* --- Keyframes --- */
+@keyframes qk-fade-in { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
+@keyframes qk-fade-out { from { opacity: 1; transform: translateY(0); } to { opacity: 0; transform: translateY(-8px); } }
+@keyframes qk-spin { to { transform: rotate(360deg); } }
+@keyframes qk-shimmer { 0% { background-position: 200% 0; } 100% { background-position: -200% 0; } }
+
+/* --- Dark mode --- */
+.dark .quiz-kit-widget,
+[data-theme="dark"] .quiz-kit-widget,
+[data-mode="dark"] .quiz-kit-widget {
+  --qk-bg: #1F2937; --qk-card-bg: #374151; --qk-text: #F9FAFB;
+  --qk-muted: #9CA3AF; --qk-border: #4B5563; --qk-secondary: #374151;
+  --qk-secondary-hover: #4B5563; --qk-primary-light: rgba(59,130,246,0.2);
+  --qk-error-light: rgba(239,68,68,0.15); --qk-shadow: 0 1px 3px rgba(0,0,0,0.3);
+  --qk-shadow-lg: 0 4px 12px rgba(0,0,0,0.3);
+}
+
+/* --- Responsive --- */
+@media (max-width: 360px) {
+  .quiz-kit-widget { border-radius: 0; }
+  .qk-page { padding: 20px 16px 16px; }
+  .qk-intro-title { font-size: 20px; }
+  .qk-question-title { font-size: 17px; }
+}
+@media (min-width: 481px) {
+  .quiz-kit-widget { border-radius: 20px; }
+  .qk-page { padding: 32px 32px 24px; }
+}

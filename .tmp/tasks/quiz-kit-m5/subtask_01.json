@@ -1,0 +1,43 @@
+{
+  "id": "quiz-kit-m5-01",
+  "seq": "01",
+  "title": "Build submissions list page with filter, search, and pagination",
+  "status": "completed",
+  "agent_id": "coder-agent",
+  "started_at": "2026-05-20T00:00:00Z",
+  "completed_at": "2026-05-20T00:00:00Z",
+  "completion_summary": "Built submissions list API route with filtering/pagination, filter components with URL-synced search params, responsive table/card views, loading state, and empty state. Sidebar link already exists.",
+  "context_files": [
+    "/root/.config/opencode/context/core/standards/code-quality.md",
+    "/root/.config/opencode/context/ui/web/ui-styling-standards.md",
+    "/root/.config/opencode/context/core/workflows/design-iteration-overview.md"
+  ],
+  "reference_files": [
+    "/workspace/quiz-kit/prisma/schema.prisma",
+    "/workspace/quiz-kit/lib/prisma.ts",
+    "/workspace/quiz-kit/lib/session.ts",
+    "/workspace/quiz-kit/lib/store.ts",
+    "/workspace/quiz-kit/src/middleware.ts",
+    "/workspace/quiz-kit/src/app/(admin)/layout.tsx",
+    "/workspace/quiz-kit/src/app/(admin)/page.tsx",
+    "/workspace/quiz-kit/src/components/admin/sidebar.tsx",
+    "/workspace/quiz-kit/src/components/admin/admin-shell.tsx"
+  ],
+  "acceptance_criteria": [
+    "Server component fetches submissions scoped to authenticated store with Prisma",
+    "Filter controls: dropdown by quiz name, date range picker (from/to), text search on email/name/sessionId",
+    "Table displays columns: date, quiz name, email, name, status (completed/abandoned), result title",
+    "Pagination with page size selector (10/25/50) using cursor or offset pagination",
+    "URL search params sync with filters for shareable/bookmarkable URLs",
+    "Rows link to submission detail page /submissions/[id]",
+    "Empty state rendered when no submissions match filters",
+    "Loading state shown during navigation (Suspense fallback)",
+    "Page follows existing admin layout pattern (server component with client islands)",
+    "Responsive at all breakpoints (table collapses on mobile, filters in a Sheet)"
+  ],
+  "deliverables": [
+    "src/app/(admin)/submissions/page.tsx",
+    "src/components/admin/submissions/submissions-table.tsx",
+    "src/components/admin/submissions/submissions-filters.tsx"
+  ]
+}

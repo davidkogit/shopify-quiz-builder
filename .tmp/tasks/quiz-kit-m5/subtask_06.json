@@ -1,0 +1,43 @@
+{
+  "id": "quiz-kit-m5-06",
+  "seq": "06",
+  "title": "Build per-quiz analytics detail page with breakdown visualizations",
+  "status": "completed",
+  "depends_on": ["04"],
+  "parallel": false,
+  "suggested_agent": "OpenFrontendSpecialist",
+  "agent_id": "coder-agent",
+  "started_at": "2026-05-20T00:00:00Z",
+  "completed_at": "2026-05-20T00:00:00Z",
+  "completion_summary": "Built per-quiz analytics detail page with 5 stat cards, top answers/products ranked lists with count bars, funnel drop-off chart, time-series bar chart, date range filter, and loading skeleton. 4 files: page.tsx, funnel-chart.tsx, time-series-chart.tsx, top-items-list.tsx, loading.tsx",
+  "context_files": [
+    "/root/.config/opencode/context/core/standards/code-quality.md",
+    "/root/.config/opencode/context/ui/web/ui-styling-standards.md",
+    "/root/.config/opencode/context/core/workflows/design-iteration-overview.md"
+  ],
+  "reference_files": [
+    "/workspace/quiz-kit/src/app/(admin)/analytics/page.tsx",
+    "/workspace/quiz-kit/src/app/(admin)/layout.tsx",
+    "/workspace/quiz-kit/src/app/api/admin/quizzes/[id]/analytics/route.ts",
+    "/workspace/quiz-kit/src/components/admin/dashboard-stats.tsx"
+  ],
+  "acceptance_criteria": [
+    "Server component fetches quiz analytics from GET /api/admin/quizzes/[id]/analytics",
+    "Renders quiz name and summary stats header (views, completions, conversion rate)",
+    "Renders top answers section: ranked list of top 10 answers with count bars",
+    "Renders top products section: ranked list of top 10 products with thumbnail and count",
+    "Renders funnel visualization: horizontal bar chart or Sankey showing question-by-question drop-off",
+    "Renders time-series chart: line/area chart of daily views and completions (last 30 days)",
+    "Date range filter via ?from=/&to= query params",
+    "404 page when quiz not found or belongs to different store",
+    "Back link to /analytics dashboard",
+    "Loading state via Suspense",
+    "Responsive: charts reflow on mobile, sections stack vertically"
+  ],
+  "deliverables": [
+    "src/app/(admin)/analytics/[id]/page.tsx",
+    "src/components/admin/analytics/funnel-chart.tsx",
+    "src/components/admin/analytics/time-series-chart.tsx",
+    "src/components/admin/analytics/top-items-list.tsx"
+  ]
+}

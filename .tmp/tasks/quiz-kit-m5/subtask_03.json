@@ -1,0 +1,41 @@
+{
+  "id": "quiz-kit-m5-03",
+  "seq": "03",
+  "title": "Build analytics aggregate API returning store-wide metrics",
+  "status": "pending",
+  "depends_on": [],
+  "parallel": true,
+  "suggested_agent": "CoderAgent",
+  "agent_id": null,
+  "started_at": null,
+  "completed_at": null,
+  "completion_summary": null,
+  "context_files": [
+    "/root/.config/opencode/context/core/standards/code-quality.md",
+    "/root/.config/opencode/context/core/standards/security-patterns.md"
+  ],
+  "reference_files": [
+    "/workspace/quiz-kit/src/app/api/admin/quizzes/route.ts",
+    "/workspace/quiz-kit/lib/session.ts",
+    "/workspace/quiz-kit/lib/store.ts",
+    "/workspace/quiz-kit/lib/prisma.ts",
+    "/workspace/quiz-kit/prisma/schema.prisma"
+  ],
+  "acceptance_criteria": [
+    "GET /api/admin/analytics resolves authenticated store from session cookie (returns 401 if invalid)",
+    "Returns total_engagements: count of AnalyticsEvent rows where event IN (quiz_started, question_answered)",
+    "Returns total_completions: count of AnalyticsEvent rows where event = quiz_completed",
+    "Returns conversion_rate: total_completions / total_engagements as percentage (0 if no engagements)",
+    "Returns total_revenue: sum of OrderAttribution.orderTotal for the store",
+    "Returns aov (average order value): total_revenue / count of OrderAttribution rows (0 if no orders)",
+    "Returns quiz_count: total published quizzes for the store",
+    "Returns submission_count: total Submission rows for the store",
+    "Supports optional ?from and ?to query params (ISO dates) to filter by date range",
+    "Response shape: { storeId, period: { from, to }, metrics: { ... }, computedAt }",
+    "Follows existing resolveStore pattern from quizzes/route.ts for session auth",
+    "All Prisma queries scoped to storeId"
+  ],
+  "deliverables": [
+    "src/app/api/admin/analytics/route.ts"
+  ]
+}

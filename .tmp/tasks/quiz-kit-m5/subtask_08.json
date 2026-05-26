@@ -1,0 +1,43 @@
+{
+  "id": "quiz-kit-m5-08",
+  "seq": "08",
+  "title": "Build Shopify order attribution webhook handler",
+  "status": "completed",
+  "depends_on": [],
+  "parallel": true,
+  "suggested_agent": "CoderAgent",
+  "agent_id": "coder-agent",
+  "started_at": "2026-05-20T00:00:00Z",
+  "completed_at": "2026-05-20T00:00:00Z",
+  "completion_summary": "Built Shopify order attribution webhook: HMAC verification, 10-day email matching, OrderAttribution + AnalyticsEvent creation, dedup guard, 200 OK for unmatched orders",
+  "context_files": [
+    "/root/.config/opencode/context/core/standards/code-quality.md",
+    "/root/.config/opencode/context/core/standards/security-patterns.md"
+  ],
+  "reference_files": [
+    "/workspace/quiz-kit/prisma/schema.prisma",
+    "/workspace/quiz-kit/lib/prisma.ts",
+    "/workspace/quiz-kit/lib/session.ts",
+    "/workspace/quiz-kit/lib/store.ts",
+    "/workspace/quiz-kit/lib/shopify.ts",
+    "/workspace/quiz-kit/lib/env.ts"
+  ],
+  "acceptance_criteria": [
+    "POST /api/webhooks/shopify/orders accepts Shopify orders/create webhook payload",
+    "Verifies Shopify HMAC-SHA256 signature from x-shopify-hmac-sha256 header using env.SHOPIFY_API_SECRET",
+    "Returns 401 if HMAC verification fails",
+    "Extracts shopifyOrderId and orderTotal from webhook payload",
+    "Looks up Store by shopifyDomain from webhook payload (X-Shopify-Shop-Domain header or shop_domain field)",
+    "Queries submissions for the store ordered by createdAt DESC, limited to last 100, within 10-day attribution window",
+    "Matches submission to order by email (case-insensitive) OR sessionId stored in a cart attribute/tracking cookie",
+    "If match found, creates OrderAttribution record with storeId, quizId, submissionId, shopifyOrderId, orderTotal",
+    "If no match, creates OrderAttribution with storeId, quizId=null, submissionId=null (unattributed order)",
+    "Prevents duplicate attribution: checks for existing OrderAttribution with same shopifyOrderId before creating",
+    "Returns 200 with { attributed: true/false, submissionId: string|null } on success",
+    "Webhook endpoint does NOT require Shopify session cookie (it is called by Shopify servers)",
+    "Logs attribution attempts for debugging (e.g., console.log) but does not fail the request on non-critical errors"
+  ],
+  "deliverables": [
+    "src/app/api/webhooks/shopify/orders/route.ts"
+  ]
+}

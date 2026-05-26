@@ -1,0 +1,14 @@
+# Netlify deployment configuration for Quiz Kit
+# The @netlify/plugin-nextjs handles the build,
+# runtime, ISR, middleware, and image optimization.
+# Requires Node 18+. Supports Next.js 13.5+ App Router.
+
+[build]
+  command = "npm run build"
+  publish = ".next"
+
+[build.environment]
+  NODE_VERSION = "18"
+
+[[plugins]]
+  package = "@netlify/plugin-nextjs"

@@ -1,0 +1,39 @@
+{
+  "id": "quiz-kit-m5-02",
+  "seq": "02",
+  "title": "Build submission detail page with answer history, result, and products",
+  "status": "completed",
+  "depends_on": ["01"],
+  "parallel": false,
+  "suggested_agent": "OpenFrontendSpecialist",
+  "agent_id": "coder-agent",
+  "started_at": "2026-05-20T00:00:00Z",
+  "completed_at": "2026-05-20T00:00:00Z",
+  "completion_summary": "Built submission detail page with full answer history, result display, recommended products, and responsive sidebar layout",
+  "context_files": [
+    "/root/.config/opencode/context/core/standards/code-quality.md",
+    "/root/.config/opencode/context/ui/web/ui-styling-standards.md",
+    "/root/.config/opencode/context/core/workflows/design-iteration-overview.md"
+  ],
+  "reference_files": [
+    "/workspace/quiz-kit/prisma/schema.prisma",
+    "/workspace/quiz-kit/lib/prisma.ts",
+    "/workspace/quiz-kit/src/app/api/public/quiz/[key]/submit/route.ts",
+    "/workspace/quiz-kit/src/app/(admin)/layout.tsx"
+  ],
+  "acceptance_criteria": [
+    "Server component fetches single Submission by ID with related Quiz name and Result data",
+    "Displays submission metadata section: date, quiz name, email, phone, name, session ID, IP, user agent",
+    "Displays answer history: each question title with selected answer(s) rendered as formatted list",
+    "Displays result section: result title, description, outcome type, outcome data (parsed from JSON)",
+    "Displays recommended products section: product title, image, price from stored JSON",
+    "Back link navigates to /submissions with preserved filter state",
+    "404 page rendered when submission ID is not found or belongs to different store",
+    "404 page rendered when submission ID does not exist",
+    "Loading state via Suspense boundary",
+    "Responsive layout: metadata sidebar on desktop, stacked on mobile"
+  ],
+  "deliverables": [
+    "src/app/(admin)/submissions/[id]/page.tsx"
+  ]
+}

@@ -1,0 +1,39 @@
+{
+  "id": "quiz-kit-m5",
+  "name": "Milestone 5: Submissions & Analytics",
+  "status": "active",
+  "objective": "Admin-facing submissions list/detail views, analytics dashboards with aggregate and per-quiz breakdowns, .xlsx export, and Shopify order attribution webhook handler",
+  "context_files": [
+    "/root/.config/opencode/context/core/standards/code-quality.md"
+  ],
+  "reference_files": [
+    "/workspace/quiz-kit/prisma/schema.prisma",
+    "/workspace/quiz-kit/lib/prisma.ts",
+    "/workspace/quiz-kit/lib/session.ts",
+    "/workspace/quiz-kit/lib/store.ts",
+    "/workspace/quiz-kit/lib/shopify.ts",
+    "/workspace/quiz-kit/src/middleware.ts",
+    "/workspace/quiz-kit/src/app/(admin)/layout.tsx",
+    "/workspace/quiz-kit/src/app/(admin)/page.tsx",
+    "/workspace/quiz-kit/src/app/api/admin/quizzes/route.ts",
+    "/workspace/quiz-kit/src/app/api/public/quiz/[key]/submit/route.ts",
+    "/workspace/quiz-kit/src/components/admin/sidebar.tsx",
+    "/workspace/quiz-kit/src/components/admin/admin-shell.tsx"
+  ],
+  "exit_criteria": [
+    "Submissions list page filterable by quiz, date range, search, status with pagination",
+    "Submission detail page shows full answer history, result, and recommended products",
+    "Analytics aggregate API returns total engagements, completions, conversion rate, revenue, AOV for store",
+    "Per-quiz analytics API returns top answers, top products, funnel/abandonment, time-series",
+    "Analytics dashboard renders aggregate stats and quiz comparison table",
+    "Quiz analytics detail page shows per-quiz breakdown with visualizations",
+    "Export API generates valid .xlsx file with submission data",
+    "Order attribution webhook links Shopify orders to quiz submissions within 10-day window",
+    "Build passes with zero TypeScript errors",
+    "All new API routes verify Shopify session from cookie"
+  ],
+  "subtask_count": 8,
+  "completed_count": 0,
+  "created_at": "2026-05-20T00:00:00Z",
+  "completed_at": null
+}

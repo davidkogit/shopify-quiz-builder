@@ -1,0 +1,42 @@
+{
+  "id": "quiz-kit-m5-05",
+  "seq": "05",
+  "title": "Build analytics dashboard page with aggregate stats and quiz comparison",
+  "status": "pending",
+  "depends_on": ["03"],
+  "parallel": false,
+  "suggested_agent": "OpenFrontendSpecialist",
+  "agent_id": null,
+  "started_at": null,
+  "completed_at": null,
+  "completion_summary": null,
+  "context_files": [
+    "/root/.config/opencode/context/core/standards/code-quality.md",
+    "/root/.config/opencode/context/ui/web/ui-styling-standards.md",
+    "/root/.config/opencode/context/core/workflows/design-iteration-overview.md"
+  ],
+  "reference_files": [
+    "/workspace/quiz-kit/src/app/(admin)/page.tsx",
+    "/workspace/quiz-kit/src/app/(admin)/layout.tsx",
+    "/workspace/quiz-kit/src/components/admin/dashboard-stats.tsx",
+    "/workspace/quiz-kit/src/app/api/admin/analytics/route.ts",
+    "/workspace/quiz-kit/src/app/api/admin/quizzes/route.ts"
+  ],
+  "acceptance_criteria": [
+    "Server component fetches aggregate analytics from GET /api/admin/analytics",
+    "Renders stat cards row: Total Engagements, Completions, Conversion Rate, Revenue, AOV",
+    "Renders date range picker that filters stats via ?from=/&to= query params",
+    "Renders quiz comparison table: quiz name, views, completions, conversion rate per quiz",
+    "Quiz comparison rows link to per-quiz analytics page /analytics/[id]",
+    "Empty state rendered when no analytics data exists",
+    "Loading state via Suspense (client fetching handled by a client island component)",
+    "Responsive layout: stat cards grid (2-col mobile, 4-col desktop)",
+    "Follows existing admin dashboard pattern (server component + client islands)",
+    "All data scoped to authenticated store"
+  ],
+  "deliverables": [
+    "src/app/(admin)/analytics/page.tsx",
+    "src/components/admin/analytics/stats-cards.tsx",
+    "src/components/admin/analytics/quiz-comparison-table.tsx"
+  ]
+}

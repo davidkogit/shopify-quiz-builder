@@ -1,0 +1,41 @@
+{
+  "id": "quiz-kit-m5-04",
+  "seq": "04",
+  "title": "Build per-quiz analytics API with breakdowns and time-series",
+  "status": "completed",
+  "depends_on": [],
+  "parallel": true,
+  "suggested_agent": "CoderAgent",
+  "agent_id": "coder-agent",
+  "started_at": "2026-05-20T00:00:00Z",
+  "completed_at": "2026-05-20T00:00:00Z",
+  "completion_summary": "Built per-quiz analytics API with summary metrics, per-question funnel, top answers/products breakdowns, 30-day time-series, and date-range filtering via ?from/?to params",
+  "context_files": [
+    "/root/.config/opencode/context/core/standards/code-quality.md",
+    "/root/.config/opencode/context/core/standards/security-patterns.md"
+  ],
+  "reference_files": [
+    "/workspace/quiz-kit/src/app/api/admin/analytics/route.ts",
+    "/workspace/quiz-kit/src/app/api/admin/quizzes/route.ts",
+    "/workspace/quiz-kit/lib/session.ts",
+    "/workspace/quiz-kit/lib/store.ts",
+    "/workspace/quiz-kit/lib/prisma.ts",
+    "/workspace/quiz-kit/prisma/schema.prisma"
+  ],
+  "acceptance_criteria": [
+    "GET /api/admin/quizzes/[id]/analytics verifies session and resolves store (401 if invalid)",
+    "Verifies quiz belongs to authenticated store (404 if not found or wrong store)",
+    "Returns summary: total_views (question_answered events), total_completions, conversion_rate",
+    "Returns top_answers: top 10 answers by frequency (count and answer title) from Submission.answers JSON",
+    "Returns top_products: top 10 recommended products by frequency from Submission.recommendedProducts JSON",
+    "Returns funnel: array of { questionTitle, viewCount, dropOffCount, dropOffRate } for each question",
+    "Returns time_series: array of { date, views, completions } grouped by day for the last 30 days",
+    "Supports optional ?from and ?to query params to filter date range",
+    "Response shape: { quizId, quizName, summary, topAnswers, topProducts, funnel, timeSeries, computedAt }",
+    "All queries scoped to quizId and authenticated storeId",
+    "Follows existing admin API patterns with resolveStore helper"
+  ],
+  "deliverables": [
+    "src/app/api/admin/quizzes/[id]/analytics/route.ts"
+  ]
+}

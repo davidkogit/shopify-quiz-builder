@@ -1,0 +1,253 @@
+// Prisma schema for Quiz Kit
+// Supports SQLite (dev) and PostgreSQL (prod) via DB_PROVIDER env var
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  // DEV: "sqlite" — PROD: change to "postgresql" when deploying
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+// ============================================================
+// Core Models
+// ============================================================
+
+model Store {
+  id            String   @id @default(cuid())
+  shopifyDomain String   @unique
+  accessToken   String
+  scopes        String
+  plan          String   @default("free")
+  emailSettings String   @default("{}") // { provider, apiKey, fromEmail, enabled } (JSON)
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  quizzes     Quiz[]
+  submissions Submission[]
+  events      AnalyticsEvent[]
+}
+
+model Quiz {
+  id           String   @id @default(cuid())
+  storeId      String
+  name         String
+  key          String   @unique // URL-safe slug for embedding
+  status       String   @default("draft") // draft | published
+  logicType    String   @default("basic") // basic|single|points|productWeight|resultWeight|combination
+  settings     String   @default("{}") // Global quiz settings (JSON)
+  styles       String   @default("{}") // Theme/styling config (JSON)
+  productLimit Int? // Max products to show in results (for Single logic)
+  abTestId     String? // UUID linking quiz variants together for A/B split testing
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  store       Store            @relation(fields: [storeId], references: [id])
+  questions   Question[]
+  results     Result[]
+  submissions Submission[]
+  events      AnalyticsEvent[]
+  resultPaths ResultPath[]
+
+  @@index([storeId])
+}
+
+model Question {
+  id          String   @id @default(cuid())
+  quizId      String
+  type        String   @default("radio") // radio|imageText|textBox|rangeSlider|selectBox|fileUpload
+  order       Int
+  title       String
+  subtitle    String?
+  description String?
+  image       String? // URL to uploaded image
+  required    Boolean  @default(false)
+  settings    String   @default("{}") // autoAdvance, progressBar visibility, etc. (JSON)
+  isDraft     Boolean  @default(false)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  quiz    Quiz     @relation(fields: [quizId], references: [id])
+  answers Answer[]
+
+  @@index([quizId])
+}
+
+model Answer {
+  id                String   @id @default(cuid())
+  questionId        String
+  title             String
+  image             String?
+  description       String?
+  order             Int
+  points            Int      @default(0) // For Points/ResultWeight logic
+  tags              String   @default("[]") // [INFERRED: tag-based filtering] (JSON array)
+  leadsToQuestionId String? // Logic jump: route to a specific next question
+  settings          String   @default("{}") // JSON
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
+
+  question          Question              @relation(fields: [questionId], references: [id])
+  products          AnswerProduct[] // Single logic product links
+  productWeights    AnswerProductWeight[] // ProductWeight logic
+  resultLinks       AnswerResultLink[] // ResultWeight logic
+  resultPathAnswers ResultPathAnswer[] // Basic logic path answers
+
+  @@index([questionId])
+  @@index([leadsToQuestionId])
+}
+
+model Result {
+  id          String   @id @default(cuid())
+  quizId      String
+  title       String
+  description String?
+  image       String?
+  order       Int
+  outcomeType String   @default("product") // product|collection|tags|text|urlRedirect
+  outcomeData String   @default("{}") // Product IDs, collection handle, URL, etc. (JSON)
+  pointsFrom  Int? // For Points logic: range start
+  pointsTo    Int? // For Points logic: range end
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  quiz        Quiz               @relation(fields: [quizId], references: [id])
+  resultPaths ResultPath[]
+  resultLinks AnswerResultLink[]
+
+  @@index([quizId])
+}
+
+// ============================================================
+// Logic Configuration Models
+// ============================================================
+
+// Basic Logic: Maps an answer path to a result
+model ResultPath {
+  id            String   @id @default(cuid())
+  quizId        String
+  resultId      String
+  logicOperator String   @default("AND") // AND | OR
+  order         Int
+  createdAt     DateTime @default(now())
+
+  quiz        Quiz               @relation(fields: [quizId], references: [id])
+  result      Result             @relation(fields: [resultId], references: [id])
+  pathAnswers ResultPathAnswer[]
+
+  @@index([quizId])
+  @@index([resultId])
+}
+
+// Basic Logic: Individual question-answer pair in a path
+model ResultPathAnswer {
+  id           String @id @default(cuid())
+  resultPathId String
+  questionId   String
+  answerId     String
+
+  resultPath ResultPath @relation(fields: [resultPathId], references: [id])
+  answer     Answer     @relation(fields: [answerId], references: [id])
+
+  @@unique([resultPathId, questionId, answerId])
+}
+
+// Single Logic: Direct product links on answers
+model AnswerProduct {
+  id               String  @id @default(cuid())
+  answerId         String
+  shopifyProductId String // GID format: gid://shopify/Product/123
+  shopifyVariantId String? // Optional variant-level recommendation
+
+  answer Answer @relation(fields: [answerId], references: [id])
+
+  @@index([answerId])
+}
+
+// Product Weight Logic: Weighted product links on answers
+model AnswerProductWeight {
+  id               String  @id @default(cuid())
+  answerId         String
+  shopifyProductId String
+  shopifyVariantId String?
+  weight           Int     @default(1)
+
+  answer Answer @relation(fields: [answerId], references: [id])
+
+  @@index([answerId])
+}
+
+// Result Weight Logic: Points contribution from answer to result
+model AnswerResultLink {
+  id       String @id @default(cuid())
+  answerId String
+  resultId String
+  points   Int    @default(1)
+
+  answer Answer @relation(fields: [answerId], references: [id])
+  result Result @relation(fields: [resultId], references: [id])
+
+  @@index([answerId])
+  @@index([resultId])
+}
+
+// ============================================================
+// Submissions & Analytics
+// ============================================================
+
+model Submission {
+  id                  String   @id @default(cuid())
+  quizId              String
+  storeId             String
+  sessionId           String // Browser session identifier
+  email               String?
+  phone               String?
+  name                String?
+  answers             String // [{questionId, questionTitle, answerIds[], answerTitles[]}] (JSON)
+  resultId            String?
+  recommendedProducts String // [{shopifyProductId, title, image, variantId}] (JSON)
+  marketingFields     String   @default("{}") // Additional structured data (JSON)
+  ipAddress           String?
+  userAgent           String?
+  createdAt           DateTime @default(now())
+
+  quiz  Quiz  @relation(fields: [quizId], references: [id])
+  store Store @relation(fields: [storeId], references: [id])
+
+  @@index([quizId])
+  @@index([storeId])
+  @@index([sessionId])
+}
+
+model AnalyticsEvent {
+  id         String   @id @default(cuid())
+  storeId    String
+  quizId     String
+  sessionId  String
+  event      String // quiz_started|question_answered|quiz_completed|add_to_cart|customer_subscribed
+  questionId String?
+  answerId   String?
+  data       String   @default("{}") // JSON
+  createdAt  DateTime @default(now())
+
+  store Store @relation(fields: [storeId], references: [id])
+  quiz  Quiz  @relation(fields: [quizId], references: [id])
+
+  @@index([quizId, createdAt])
+  @@index([sessionId])
+}
+
+model OrderAttribution {
+  id             String   @id @default(cuid())
+  storeId        String
+  quizId         String
+  submissionId   String?
+  shopifyOrderId String
+  orderTotal     Float
+  createdAt      DateTime @default(now())
+
+  @@index([quizId])
+  @@index([submissionId])
+}
