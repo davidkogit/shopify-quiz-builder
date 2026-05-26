@@ -6,6 +6,10 @@
  *
  * Without a `?shop=` parameter: shows a friendly install page with a form
  * to enter the store domain.
+ *
+ * CSRF protection: the nonce is embedded in the `state` parameter as
+ * `nonce.hmac` (signed with the API secret). This avoids the need for a
+ * cookie, which can be stripped by some hosting environments on redirect.
  */
 
 import { NextRequest, NextResponse } from "next/server";
@@ -25,9 +29,14 @@ function sanitiseShop(raw: string): string | null {
   return clean;
 }
 
+function hmacSign(data: string, secret: string): string {
+  return crypto.createHmac("sha256", secret).update(data).digest("hex");
+}
+
 function buildAuthUrl(
   shop: string,
   nonce: string,
+  statePayload: string,
   apiKey: string,
   scopes: string,
   redirectUri: string,
@@ -36,7 +45,7 @@ function buildAuthUrl(
   url.searchParams.set("client_id", apiKey);
   url.searchParams.set("scope", scopes);
   url.searchParams.set("redirect_uri", redirectUri);
-  url.searchParams.set("state", nonce);
+  url.searchParams.set("state", statePayload);
   return url.toString();
 }
 
@@ -82,7 +91,6 @@ function installPageHtml(): NextResponse {
       var shop = document.getElementById("shop").value.trim();
       if (shop) location.href = "?shop=" + encodeURIComponent(shop);
     }
-    // Auto-redirect if ?shop= is already in URL (e.g. from Shopify app listing)
     var params = new URLSearchParams(location.search);
     if (params.get("shop")) location.reload();
   </script>
@@ -115,17 +123,28 @@ export async function GET(req: NextRequest): Promise<NextResponse> {
   }
 
   const nonce = crypto.randomBytes(16).toString("hex");
+  // Sign the nonce so we can verify it on callback without a cookie
+  const statePayload = `${nonce}.${hmacSign(nonce, env.SHOPIFY_API_SECRET)}`;
+
   const redirectUri = `${env.HOST}/api/auth/callback`;
-  const authUrl = buildAuthUrl(shop, nonce, env.SHOPIFY_API_KEY, env.SHOPIFY_SCOPES, redirectUri);
+  const authUrl = buildAuthUrl(shop, nonce, statePayload, env.SHOPIFY_API_KEY, env.SHOPIFY_SCOPES, redirectUri);
 
-  const response = NextResponse.redirect(authUrl);
-  response.cookies.set("shopify_nonce", nonce, {
-    httpOnly: true,
-    secure: false,
-    sameSite: "lax",
-    path: "/",
-    maxAge: 60 * 10, // 10 minutes — plenty of time for the merchant to approve
-  });
+  return NextResponse.redirect(authUrl);
+}
 
-  return response;
+/**
+ * Verify a state payload of the form `nonce.hmac`.
+ * Returns the nonce if valid, or null.
+ */
+export function verifyStatePayload(state: string, secret: string): string | null {
+  const dot = state.lastIndexOf(".");
+  if (dot === -1) return null;
+  const nonce = state.slice(0, dot);
+  const receivedHmac = state.slice(dot + 1);
+  const expectedHmac = hmacSign(nonce, secret);
+  // Constant-time comparison to prevent timing attacks
+  const a = Buffer.from(receivedHmac, "hex");
+  const b = Buffer.from(expectedHmac, "hex");
+  if (a.length !== b.length) return null;
+  return crypto.timingSafeEqual(a, b) ? nonce : null;
 }

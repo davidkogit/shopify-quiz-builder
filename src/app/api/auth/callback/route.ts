@@ -22,6 +22,7 @@ import {
 import { upsertStore } from "../../../../../lib/store";
 import { prisma } from "../../../../../lib/prisma";
 import { createWebhook } from "../../../../../lib/shopify";
+import { verifyStatePayload } from "../route";
 
 // ---------------------------------------------------------------------------
 // Pure helpers
@@ -109,9 +110,9 @@ export async function GET(req: NextRequest): Promise<NextResponse> {
     );
   }
 
-  // ---------- CSRF: validate state nonce ----------
-  const nonceCookie = req.cookies.get("shopify_nonce");
-  if (!nonceCookie || nonceCookie.value !== state) {
+  // ---------- CSRF: validate state parameter (signed nonce, no cookie needed) ----------
+  const nonce = verifyStatePayload(state, env.SHOPIFY_API_SECRET);
+  if (!nonce) {
     return NextResponse.json(
       { error: "Invalid state parameter — possible CSRF attack" },
       { status: 403 },
@@ -167,9 +168,6 @@ export async function GET(req: NextRequest): Promise<NextResponse> {
 
   const response = NextResponse.redirect(new URL("/", env.HOST));
   await setSessionCookie(session, env.SESSION_SECRET, response.cookies);
-
-  // Clean up the nonce cookie — it's single-use
-  response.cookies.delete("shopify_nonce");
 
   return response;
   } catch (err) {
