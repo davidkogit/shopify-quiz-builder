@@ -1,15 +1,13 @@
 // Prisma schema for Quiz Kit
-// DEV: SQLite (file-based, works out of the box)
-// PROD: Change the `provider` field below from "sqlite" to "postgresql" before deploying.
-//        Also set DATABASE_URL to your PostgreSQL connection string in Netlify env vars.
+// Uses PostgreSQL. Set DATABASE_URL to your PostgreSQL connection string.
+// For local dev with SQLite, change provider below back to "sqlite".
 
 generator client {
   provider = "prisma-client-js"
 }
 
 datasource db {
-  // DEV: "sqlite" — PROD: change to "postgresql" when deploying
-  provider = "sqlite"
+  provider = "postgresql"
   url      = env("DATABASE_URL")
 }
 

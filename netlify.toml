@@ -4,7 +4,7 @@
 # Requires Node 18+. Supports Next.js 13.5+ App Router.
 
 [build]
-  command = "npx prisma generate && next build && npm run widget:build"
+  command = "npx prisma generate && npx prisma db push --skip-generate && next build && npm run widget:build"
   publish = ".next"
 
 [build.environment]
