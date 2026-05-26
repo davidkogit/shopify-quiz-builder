@@ -66,9 +66,11 @@ export const env = {
     return requireEnv("DATABASE_URL");
   },
 
-  /** Public URL of the app (used for OAuth redirects). */
+  /** Public URL of the app (used for OAuth redirects). Always starts with https:// */
   get HOST(): string {
-    return requireEnv("HOST");
+    const raw = requireEnv("HOST");
+    if (!/^https?:\/\//.test(raw)) return `https://${raw}`;
+    return raw;
   },
 
   /**
