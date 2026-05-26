@@ -94,7 +94,8 @@ async function exchangeCodeForToken(
 // ---------------------------------------------------------------------------
 
 export async function GET(req: NextRequest): Promise<NextResponse> {
-  const { searchParams } = req.nextUrl;
+  try {
+    const { searchParams } = req.nextUrl;
   const code = searchParams.get("code");
   const shop = searchParams.get("shop");
   const state = searchParams.get("state");
@@ -147,8 +148,13 @@ export async function GET(req: NextRequest): Promise<NextResponse> {
     scopes: env.SHOPIFY_SCOPES,
   };
 
-  // Persist (or update) the store record so the database is in sync
-  await upsertStore(prisma, shop, accessToken, env.SHOPIFY_SCOPES);
+  // Persist (or update) the store record so the database is in sync.
+  // Catch errors so a database outage doesn't block OAuth install.
+  try {
+    await upsertStore(prisma, shop, accessToken, env.SHOPIFY_SCOPES);
+  } catch (err) {
+    console.error("Failed to upsert store during OAuth callback:", err instanceof Error ? err.message : err);
+  }
 
   // Register the app/uninstalled webhook (fire-and-forget — non-blocking)
   createWebhook(
@@ -166,4 +172,11 @@ export async function GET(req: NextRequest): Promise<NextResponse> {
   response.cookies.delete("shopify_nonce");
 
   return response;
+  } catch (err) {
+    console.error("OAuth callback failed:", err instanceof Error ? err.message : err);
+    return NextResponse.json(
+      { error: "Internal server error during OAuth callback" },
+      { status: 500 },
+    );
+  }
 }
