@@ -5,6 +5,7 @@
   "scripts": {
     "dev": "next dev",
     "build": "next build && npm run widget:build",
+    "postinstall": "npx prisma generate",
     "widget:build": "node widget.build.mjs",
     "start": "next start",
     "lint": "next lint",

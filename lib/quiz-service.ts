@@ -206,11 +206,6 @@ export async function unpublishQuiz(
 // duplicateQuiz — deep-copy a quiz with all nested configs
 // ---------------------------------------------------------------------------
 
-/** Shape of a quiz fetched with all relations needed for duplication. */
-type DuplicateSource = NonNullable<
-  Awaited<ReturnType<typeof fetchQuizForDuplicate>>
->;
-
 /**
  * Fetch a quiz with every nested relation required for a faithful deep copy.
  * Not exported — only used internally by {@link duplicateQuiz}.
