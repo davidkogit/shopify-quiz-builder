@@ -8,7 +8,12 @@
  * Architecture:
  *   - Server Component: decrypts session, passes shopDomain to shell
  *   - Client Components: AdminShell, Sidebar, Header, AppBridgeProvider
+ *
+ * Marked force-dynamic: all admin pages require a live session and database,
+ * so static generation at build time is not useful.
  */
+export const dynamic = "force-dynamic";
+
 import { cookies } from "next/headers";
 import { getSessionFromCookie, type Session } from "../../../lib/session";
 import { env } from "../../../lib/env";
