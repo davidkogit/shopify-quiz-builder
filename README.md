@@ -207,11 +207,19 @@ The widget auto-mounts and runs the full quiz flow — intro, questions, email c
    HOST=https://your-site.netlify.app
    ```
 
-5. **Update Prisma schema** for PostgreSQL:
-   - Edit `prisma/schema.prisma`, change `provider = "sqlite"` to `provider = "postgresql"`
-   - Commit and push — Netlify rebuilds automatically
+5. **Change to PostgreSQL** (one-time — then push):
+   ```bash
+   # Edit prisma/schema.prisma
+   # Change: provider = "sqlite"
+   # To:     provider = "postgresql"
+   
+   git add prisma/schema.prisma
+   git commit -m "Switch to PostgreSQL for production"
+   git push
+   ```
+   Netlify will auto-rebuild. The build command in `netlify.toml` runs `prisma generate && prisma db push` which creates all tables in your PostgreSQL database.
 
-6. **Update Shopify app URL** in Shopify Partners to point to your Netlify URL
+6. **Update Shopify app URL** — in Shopify Partners, change App URL to `https://your-site.netlify.app`
 
 ---
 
